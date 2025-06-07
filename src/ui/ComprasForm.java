@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -27,9 +29,16 @@ public class ComprasForm extends javax.swing.JFrame {
      * Creates new form ComprasForm
      */
     private Cliente clienteActual;
+    private Map<String, Double> preciosProductos = new HashMap<>();
 
     public ComprasForm() {
         initComponents();
+
+        preciosProductos.put("Auriculares", 1200.00);
+        preciosProductos.put("Mouse", 1000.00);
+        preciosProductos.put("Teclado", 1300.00);
+        preciosProductos.put("Monitor", 6000.00);
+        preciosProductos.put("Silla", 3000.00);
     }
 
     /**
@@ -125,7 +134,12 @@ public class ComprasForm extends javax.swing.JFrame {
 
         cbArticulo.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         cbArticulo.setForeground(new java.awt.Color(204, 204, 204));
-        cbArticulo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Monitor", "Case", "Teclado", "Mouse" }));
+        cbArticulo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Monitor", "Auriculares", "Teclado", "Mouse", "Silla", " " }));
+        cbArticulo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbArticuloActionPerformed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(51, 51, 51));
@@ -133,6 +147,12 @@ public class ComprasForm extends javax.swing.JFrame {
 
         txtPrecio.setBackground(new java.awt.Color(255, 255, 255));
         txtPrecio.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        txtPrecio.setEnabled(false);
+        txtPrecio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPrecioActionPerformed(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(51, 51, 51));
@@ -176,6 +196,7 @@ public class ComprasForm extends javax.swing.JFrame {
         btnImprimir.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnImprimir.setForeground(new java.awt.Color(255, 255, 255));
         btnImprimir.setText("Imprimir");
+        btnImprimir.setEnabled(false);
         btnImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnImprimirActionPerformed(evt);
@@ -323,6 +344,7 @@ public class ComprasForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
     private void bntAgregarComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntAgregarComprasActionPerformed
 
         if (clienteActual == null) {
@@ -330,27 +352,24 @@ public class ComprasForm extends javax.swing.JFrame {
             return;
         }
 
-        String cedula = clienteActual.getCedula(); 
+        String cedula = clienteActual.getCedula();
         String nombre = txtNombre.getText().trim();
         String fecha = txtFecha.getText();
         String vendedor = txtVendedor.getText();
         String tipoCompra = cbTipodeCompra.getSelectedItem().toString();
         String articulo = cbArticulo.getSelectedItem().toString();
         int cantidad = (int) spnCantidad.getValue();
-        double precio;
+        Double precio = preciosProductos.get(articulo);
 
-        try {
-            precio = Double.parseDouble(txtPrecio.getText().trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Precio inválido.");
+        if (precio == null || precio <= 0) {
+            JOptionPane.showMessageDialog(this, "El artículo seleccionado no tiene un precio válido.");
             return;
         }
 
-        /* if (cedula.isEmpty() || nombre.isEmpty() || articulo.isEmpty()
-                || tipoCompra.equals("Seleccionar") || precio <= 0 || cantidad <= 0) {
+        if (articulo.equals("Seleccionar") || tipoCompra.equals("Seleccionar") || precio <= 0 || cantidad <= 0) {
             JOptionPane.showMessageDialog(this, "Completa todos los campos correctamente.");
             return;
-        }*/
+        }
         Compras compra = new Compras(cedula, nombre, fecha, vendedor, tipoCompra, articulo, cantidad, precio);
 
         boolean guardado = dbManager.guardarCompras(compra);
@@ -368,7 +387,6 @@ public class ComprasForm extends javax.swing.JFrame {
                 compra.getCantidad(),
                 compra.getPrecioUnitario(),
                 compra.getTotal()
-
             });
 
             for (int i = 0; i < model.getRowCount(); i++) {
@@ -377,12 +395,13 @@ public class ComprasForm extends javax.swing.JFrame {
                     totalGeneral += Double.parseDouble(value.toString());
                 }
             }
+            btnImprimir.setEnabled(true);
 
             txtTotalGeneral.setText(String.format("RD$%.2f", totalGeneral));
 
             cbArticulo.setSelectedIndex(0);
             spnCantidad.setValue(1);
-            txtPrecio.setText("");
+            //txtPrecio.setText("");
             txtBuscar.setEnabled(true);
 
         } else {
@@ -398,56 +417,24 @@ public class ComprasForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bntCancelarActionPerformed
 
     private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Guardar archivo");
+        fileChooser.setDialogTitle("Imprimir Factura");
 
         int seleccion = fileChooser.showSaveDialog(this);
 
         if (seleccion == JFileChooser.APPROVE_OPTION) {
             File archivo = fileChooser.getSelectedFile();
 
-            try (PrintWriter writer = new PrintWriter(archivo)) {
-
-                writer.println("Cédula     : " + clienteActual.getCedula() + "   Nombre: " + clienteActual.getNombre());
-                writer.println();
-
-                writer.println("------------------------------------------------------------------------------------------");
-                writer.println("------Resumen Final-------");
-
-                writer.println("------------------------------------------------------------------------------------------");
-                writer.printf("%-14s %-14s %-13s %-14s %-10s %-12s %-12s\n",
-                        "Fecha", "Vendedor", "Artículo", "Tipo Compra",  "Cantidad", "Precio", "Monto");
-                writer.println("------------------------------------------------------------------------------------------");
-
-                DefaultTableModel model = (DefaultTableModel) tblCompras.getModel();
-                double totalGeneral = 0;
-
-                for (int i = 0; i < model.getRowCount(); i++) {
-                    String fecha = model.getValueAt(i, 0).toString();
-                    String vendedor = model.getValueAt(i, 1).toString();
-                    String articulo = model.getValueAt(i, 2).toString();
-                    String tipoCompra = model.getValueAt(i, 3).toString();
-                    String cantidad = model.getValueAt(i, 4).toString();
-                    String precio = model.getValueAt(i, 5).toString();
-                    String monto = model.getValueAt(i, 6).toString();
-
-                    totalGeneral += Double.parseDouble(monto);
-
-                    writer.printf("%-14s %-14s %-13s %-14s %-10s %-12s %-12s\n",
-                            fecha, vendedor, articulo, tipoCompra, cantidad, precio, monto);
+            try {
+                if (tblCompras.getRowCount() == 0) {
+                    JOptionPane.showMessageDialog(this, "No hay registros para imprimir.");
+                    return;
                 }
-
-                writer.println("------------------------------------------------------------------------------------------");
-                writer.printf("%-14s %.2f\n", "Total:", totalGeneral);
-                writer.println();
-
-                writer.println("-------------------------------------------------------------------------------------------");
-                writer.println("-----------Final-----------------");
-
-                JOptionPane.showMessageDialog(this, "Archivo generado correctamente.");
-
+                Imprimir(archivo);
+                JOptionPane.showMessageDialog(this, "Factura generada correctamente.");
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error al generar el archivo: " + e.getMessage());
+                JOptionPane.showMessageDialog(this, "Error al generar archivo: " + e.getMessage());
             }
         }
 
@@ -470,7 +457,8 @@ public class ComprasForm extends javax.swing.JFrame {
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             txtFecha.setText(hoy.format(formato));
             //Vendedores
-            String[] vendedores = {"Helen Rosario", "Osamu Dazai", "José Santana", "María Rosales", "Suguru Geto"};
+            String[] vendedores = {"Helen Rosario", "Osamu Dazai", "José Santana", "María Rosales", "Suguru Geto",
+                "Edward Acevedo", "Tommy Contreras"};
             String vendedor = vendedores[new Random().nextInt(vendedores.length)];
             txtVendedor.setText(vendedor);
 
@@ -485,6 +473,21 @@ public class ComprasForm extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnBuscarClientesActionPerformed
+
+    private void txtPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioActionPerformed
+      
+    }//GEN-LAST:event_txtPrecioActionPerformed
+
+    private void cbArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbArticuloActionPerformed
+                String articuloSeleccionado = cbArticulo.getSelectedItem().toString();
+
+        if (preciosProductos.containsKey(articuloSeleccionado)) {
+            double precio = preciosProductos.get(articuloSeleccionado);
+            txtPrecio.setText(String.format("%.2f", precio));
+        } else {
+            txtPrecio.setText("");
+        }
+    }//GEN-LAST:event_cbArticuloActionPerformed
 
     /**
      * @param args the command line arguments
@@ -549,4 +552,46 @@ public class ComprasForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtTotalGeneral;
     private javax.swing.JTextField txtVendedor;
     // End of variables declaration//GEN-END:variables
+
+    private void Imprimir(File archivo) throws IOException {
+
+        try (PrintWriter writer = new PrintWriter(archivo)) {
+
+            writer.println("Cédula     : " + clienteActual.getCedula() + "   Nombre: " + clienteActual.getNombre());
+            writer.println();
+
+            writer.println("------------------------------------------------------------------------------------------");
+            writer.println("------Resumen Final-------");
+
+            writer.println("------------------------------------------------------------------------------------------");
+            writer.printf("%-14s %-14s %-13s %-14s %-10s %-12s %-12s\n",
+                    "Fecha", "Vendedor", "Artículo", "Tipo Compra", "Cantidad", "Precio", "Monto");
+            writer.println("------------------------------------------------------------------------------------------");
+
+            DefaultTableModel model = (DefaultTableModel) tblCompras.getModel();
+            double totalGeneral = 0;
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                String fecha = model.getValueAt(i, 0).toString();
+                String vendedor = model.getValueAt(i, 1).toString();
+                String articulo = model.getValueAt(i, 2).toString();
+                String tipoCompra = model.getValueAt(i, 3).toString();
+                String cantidad = model.getValueAt(i, 4).toString();
+                String precio = model.getValueAt(i, 5).toString();
+                String monto = model.getValueAt(i, 6).toString();
+
+                totalGeneral += Double.parseDouble(monto);
+
+                writer.printf("%-14s %-14s %-13s %-14s %-10s %-12s %-12s\n",
+                        fecha, vendedor, articulo, tipoCompra, cantidad, precio, monto);
+            }
+
+            writer.println("------------------------------------------------------------------------------------------");
+            writer.printf("%-14s %.2f\n", "Total:", totalGeneral);
+            writer.println();
+
+            writer.println("-------------------------------------------------------------------------------------------");
+            writer.println("-----------Final-----------------");
+        }
+    }
 }
