@@ -361,11 +361,11 @@ public class ComprasForm extends javax.swing.JFrame {
         int cantidad = (int) spnCantidad.getValue();
         Double precio = preciosProductos.get(articulo);
 
-        if (precio == null || precio <= 0) {
+    /*    if (precio == null || precio <= 0) {
             JOptionPane.showMessageDialog(this, "El artículo seleccionado no tiene un precio válido.");
             return;
         }
-
+        */
         if (articulo.equals("Seleccionar") || tipoCompra.equals("Seleccionar") || precio <= 0 || cantidad <= 0) {
             JOptionPane.showMessageDialog(this, "Completa todos los campos correctamente.");
             return;
@@ -475,11 +475,11 @@ public class ComprasForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBuscarClientesActionPerformed
 
     private void txtPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioActionPerformed
-      
+
     }//GEN-LAST:event_txtPrecioActionPerformed
 
     private void cbArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbArticuloActionPerformed
-                String articuloSeleccionado = cbArticulo.getSelectedItem().toString();
+        String articuloSeleccionado = cbArticulo.getSelectedItem().toString();
 
         if (preciosProductos.containsKey(articuloSeleccionado)) {
             double precio = preciosProductos.get(articuloSeleccionado);

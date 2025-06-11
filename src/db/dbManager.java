@@ -67,31 +67,26 @@ public class dbManager {
             return false;
         }
     }
-    
-    public static Cliente buscarClientePorCedula(String cedula) {
-    String sql = "SELECT * FROM Clientes WHERE Cedula = ?";
-    
-    try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, cedula);
-        ResultSet rs = stmt.executeQuery();
-        
-        if (rs.next()) {
-            return new Cliente(
-                rs.getString("Cedula"),
-                rs.getString("Nombre"),
-                rs.getString("Direccion"),
-                rs.getString("Genero"),
-                rs.getString("Estado")
-            );
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-        return null;
-}
-    
-    
-    
-    
-}
 
+    public static Cliente buscarClientePorCedula(String cedula) {
+        String sql = "SELECT * FROM Clientes WHERE Cedula = ?";
+
+        try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cedula);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Cliente(
+                        rs.getString("Cedula"),
+                        rs.getString("Nombre"),
+                        rs.getString("Direccion"),
+                        rs.getString("Genero"),
+                        rs.getString("Estado")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}

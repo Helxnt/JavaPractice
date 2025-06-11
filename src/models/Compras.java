@@ -16,7 +16,7 @@ public class Compras {
     private int cantidad;
     private double precioUnitario;
 
-    //metodo constructor
+    //constructor
     public Compras(String CedulaCliente, String NombreCliente, String fecha, String vendedor, String tipoCompra,
             String articulo, int cantidad, double precioUnitario) {
         this.CedulaCliente = CedulaCliente;

@@ -17,7 +17,7 @@ public class Cliente {
     private String genero;
     private String estado;
     
-    //metodo constructor
+    //constructor
     public Cliente(String cedula, String nombre, String direccion, String genero, String estado){
     
         this.cedula = cedula;
