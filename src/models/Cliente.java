@@ -9,15 +9,13 @@ package models;
  * @author Asus
  */
 public class Cliente {
-    
-    //variables
+
     private String cedula;
     private String nombre;
     private String direccion;
     private String genero;
     private String estado;
     
-    //constructor
     public Cliente(String cedula, String nombre, String direccion, String genero, String estado){
     
         this.cedula = cedula;
@@ -27,14 +25,12 @@ public class Cliente {
         this.estado = estado;
     
     }
-    
-    //sobrecarga
+ 
     public Cliente(String cedula, String nombre){
         
         this(cedula, nombre, "","","");
     }
-    
-    //getters 
+
         public String getCedula() {
         return cedula;
     }
@@ -67,7 +63,6 @@ public class Cliente {
                nombre != null && !nombre.isEmpty();
     }
 
-     //sobreescritura
     @Override
     public String toString() {
         return "Cédula: " + cedula + "\n" +

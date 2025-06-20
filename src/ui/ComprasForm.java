@@ -361,12 +361,7 @@ public class ComprasForm extends javax.swing.JFrame {
         int cantidad = (int) spnCantidad.getValue();
         Double precio = preciosProductos.get(articulo);
 
-    /*    if (precio == null || precio <= 0) {
-            JOptionPane.showMessageDialog(this, "El artículo seleccionado no tiene un precio válido.");
-            return;
-        }
-        */
-        if (articulo.equals("Seleccionar") || tipoCompra.equals("Seleccionar") || precio <= 0 || cantidad <= 0) {
+        if (articulo.equals("Seleccionar") || tipoCompra.equals("Seleccionar") || cantidad <= 0) {
             JOptionPane.showMessageDialog(this, "Completa todos los campos correctamente.");
             return;
         }
@@ -401,8 +396,6 @@ public class ComprasForm extends javax.swing.JFrame {
 
             cbArticulo.setSelectedIndex(0);
             spnCantidad.setValue(1);
-            //txtPrecio.setText("");
-            txtBuscar.setEnabled(true);
 
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo registrar la compra.");
@@ -427,10 +420,6 @@ public class ComprasForm extends javax.swing.JFrame {
             File archivo = fileChooser.getSelectedFile();
 
             try {
-                if (tblCompras.getRowCount() == 0) {
-                    JOptionPane.showMessageDialog(this, "No hay registros para imprimir.");
-                    return;
-                }
                 Imprimir(archivo);
                 JOptionPane.showMessageDialog(this, "Factura generada correctamente.");
             } catch (IOException e) {
@@ -453,16 +442,15 @@ public class ComprasForm extends javax.swing.JFrame {
             txtCedula.setText(clienteActual.getCedula());
             txtNombre.setText(clienteActual.getNombre());
             LocalDate hoy = LocalDate.now();
-            // txtFecha.setText(hoy.toString());
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             txtFecha.setText(hoy.format(formato));
             //Vendedores
-            String[] vendedores = {"Helen Rosario", "Osamu Dazai", "José Santana", "María Rosales", "Suguru Geto",
-                "Edward Acevedo", "Tommy Contreras"};
+            String[] vendedores = {"fulano1", "fulano2", "fulano3", "fulano4", "fulano5",
+                "fulano6"};
             String vendedor = vendedores[new Random().nextInt(vendedores.length)];
             txtVendedor.setText(vendedor);
 
-            //setEnabled(false);
+         
             txtBuscar.setText("");
             txtBuscar.setEnabled(false);
 
@@ -591,7 +579,7 @@ public class ComprasForm extends javax.swing.JFrame {
             writer.println();
 
             writer.println("-------------------------------------------------------------------------------------------");
-            writer.println("-----------Final-----------------");
+            writer.println("------------Final-----------------");
         }
     }
 }

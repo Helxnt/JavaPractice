@@ -11,9 +11,9 @@ import models.Compras;
 
 public class dbManager {
 
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=practicaDB;encrypt=true;trustServerCertificate=true";
-    private static final String USER = "helenuser";
-    private static final String PASSWORD = "1234";
+    private static final String URL = "jdbc:sqlserver://localhost:'';databaseName='';encrypt=true;trustServerCertificate=true";
+    private static final String USER = "''";
+    private static final String PASSWORD = "''";
 
     public static Connection conectar() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
